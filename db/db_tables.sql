@@ -1,0 +1,5 @@
+CREATE TABLE sessions (
+    session_id UUID PRIMARY KEY,
+    start_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    end_time TIMESTAMP
+);

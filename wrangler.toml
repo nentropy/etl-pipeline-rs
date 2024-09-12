@@ -1,0 +1,14 @@
+name = "cloudflare-etl-pipeline"
+main = "build/worker/shim.mjs"
+compatibility_date = "2023-03-22"
+
+[build]
+command = "cargo install -q worker-build && worker-build --release"
+
+[[r2_buckets]]
+binding = {"etl-bucket"}
+bucket_name = "etl-bucket"
+
+[[queues]]
+binding = {"etl-queue"}
+queue_name = "etl-queue"
