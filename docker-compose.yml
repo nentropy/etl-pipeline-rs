@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile.psql
+    image: postgres:latest
+    container_name: etl_pipeline_pgres
+    environment:
+      POSTGRES_USER: ${USER_PSQL}
+      POSTGRES_PASSWORD: ${PW_PSQL_PW}
+      POSTGRES_DB: etl_pipeline_001
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - etl_network
+
+  redis:
+    build:
+      context: .
+      dockerfile: Dockerfile.redis
+    container_name: etl_pipeline_redis
+    environment:
+      REDIS_USER: ${REDIS_USER}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - etl_network
+  
+  rust_app:
+    build:
+      context: .
+      dockerfile: Dockerfile.rust
+    container_name: my_rust_app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://${USER_PSQL}:${PW_PSQL_PW}@postgres:5432/etl_pipeline_001
+    networks:
+      - etl_network
+    ports:
+      - "8080:8080"
+      
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  etl_network:
+    driver: bridge

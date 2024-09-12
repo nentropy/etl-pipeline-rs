@@ -3,7 +3,7 @@
 /// 
 use tokio_postgres::{ NoTLS, Error };
 use syn_crabs::setup_logging;
-use tokio::prelude::*
+use tokio;
 
 
 #[tokio::main]

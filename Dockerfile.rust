@@ -1,0 +1,32 @@
+FROM rust:latest as builder
+
+WORKDIR /usr/src/app
+
+ENV RUSTFLAGS="-Awarnings"
+
+
+COPY Cargo.toml Cargo.lock ./
+
+RUN mkdir src
+RUN echo "fn main() { println!(\"dummy\"); }" > src/main.rs
+
+RUN cargo build --release
+RUN rm -f src/main.rs
+
+COPY . .
+
+RUN cargo build --release
+
+FROM debian:bullseye-slim
+
+RUN apt-get update && \
+    apt-get install -y libpq-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /usr/src/app
+
+COPY --from=builder /usr/src/app/target/release/etl_pipeline .
+
+ENV DATABASE_URL=postgres://user:password@localhost:5432/mydb
+
+CMD ["./etl_pipeline"]

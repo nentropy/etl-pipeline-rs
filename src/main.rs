@@ -7,11 +7,24 @@
 //! 1. Check if sesioon exists
 mod enums;
 mod structs; 
-mod session_ctx;
 
-use session_ctx::{ SessionContext, SessionID, Session }
+use syn_crabs::setup_logging;
+use session_ctx::{ SessionContext, SessionID, Session };
 
-async fn main() {
-    //establish session
+
+pub fn main() -> Result<(), Error<()>> {
+    match setup_logging(verbose=false, quiet=false) {
+        Ok(_) => {
+            log::info!("Logging setup successful");
+            Ok(())
+        },
+        Err(e) => {
+            log::error!("Failed to load logging: {:?}", e);
+            Err(Error::new(()))
+        }
+    }
+}
+
+
 
 }

@@ -1,4 +1,8 @@
 //! Cloudflare ETL Pipeline Data Collection
+//! 
+mod session_ctx;
+mod enums;
+
 
 use worker::*;
 use serde::{Deserialize, Serialize};
@@ -7,20 +11,6 @@ use syn_crabs::setup_logging;
 use uuid::Uuid;
 
 
-#[derive(Deserialize)]
-struct InputData {
-    id: String,
-    timetamp: u64,
-    data: String,
-}
-
-
-#[derive(Deserialize)]
-struct ProcessedData {
-    id: String,
-    session_id: Uuid::v4,
-
-}
 
 
 /// Asynchronous function that defines routes for ingesting, processing, and querying data.

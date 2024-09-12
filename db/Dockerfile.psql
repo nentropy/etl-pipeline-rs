@@ -1,0 +1,11 @@
+
+FROM postgres:latest
+
+ENV POSTGRES_USER=${USER_PSQL}
+ENV POSTGRES_PASSWORD=${PW_PSQL_PW_}
+ENV POSTGRES_DB=etl_pipeline_001
+
+COPY init.sql /docker-entrypoint-initdb.d/
+
+
+EXPOSE 5432
