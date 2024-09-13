@@ -1,5 +1,6 @@
 mod lib;
 mod ops;
+mod sessions;
 mod session_ctx;
 mod main;
 mod opencti;
@@ -16,6 +17,9 @@ use crate::to_do::structs::pending::Pending;
 pub mod enums;
 pub mod structs;
 pub mod traits;
+
+use enums::FileTypes;
+
 
 pub enum ItemType {
     Pending(Pending),

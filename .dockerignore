@@ -4,6 +4,7 @@ target/
 
 **/*.rs.bk
 **/*.rs~
+.DS_Store
 
 .*
 !/.gitignore  # Include .gitignore file if necessary

@@ -21,9 +21,21 @@ postgres = "0.19.8"
 redis = "0.27.0"
 argon2 = "0.5.3"
 thiserror = "1.0.63"
+chronos = "0.0.0"
 
 
 [profile.release]
 lto = true
 strip = true
 codegen-units = 1
+
+[[queues.consumers]]
+queue = "myqueueotherqueue"
+max_batch_size = 10
+max_batch_timeout = 30
+
+
+[[queues.producers]]
+queue = "myqueue"
+binding = "my_queue"
+

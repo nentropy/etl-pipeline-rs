@@ -3,7 +3,7 @@ version: '3.8'
 services:
   postgres:
     build:
-      context: .
+      context: ./db/
       dockerfile: Dockerfile.psql
     image: postgres:latest
     container_name: etl_pipeline_pgres
@@ -21,7 +21,7 @@ services:
 
   redis:
     build:
-      context: .
+      context: ./db/redis
       dockerfile: Dockerfile.redis
     container_name: etl_pipeline_redis
     environment:
@@ -34,22 +34,32 @@ services:
     networks:
       - etl_network
   
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    environment:
+      - TERM=linux
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-polystat-panel
+    ports:
+      - '3000:3000'
+    volumes:
+      - 'grafana_storage:/var/lib/grafana'
+  
   rust_app:
     build:
       context: .
       dockerfile: Dockerfile.rust
-    container_name: my_rust_app
+    container_name: etl_pipeline_001
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
-    environment:
-      DATABASE_URL: postgres://${USER_PSQL}:${PW_PSQL_PW}@postgres:5432/etl_pipeline_001
-    networks:
-      - etl_network
-    ports:
-      - "8080:8080"
+      grafana:
+        condition: service_started
+        
+    
       
 
 volumes:
@@ -57,6 +67,7 @@ volumes:
     driver: local
   redis_data:
     driver: local
+  grafana_storage: {}
 
 networks:
   etl_network:

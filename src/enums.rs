@@ -3,8 +3,12 @@ use std::fmt::Formatter;
 use serde::{Serialize, Serializer};
 use crate::to_do::enums::TaskStatus::{DONE, PENDING};
 use syn_crabs::setup_logging;
+use structs::{ Session, SessionContext, SessionID};
 
-setup_logging();
+setup_logging(verbose: false, quiet: false).expect("Logging Failed")
+
+session_id
+
 
 #[derive(Clone)]
 pub enum PipelineStage {
@@ -13,6 +17,30 @@ pub enum PipelineStage {
     Loading,
     Validation,
 }
+
+#[derive(Debug, PartialEq)]
+pub enum FileTypes {
+    Csv,
+    Json,
+    Parquet,
+    Streaming,
+}
+
+impl FileTypes {
+    pub fn extension(&self) -> &str {
+        match self {
+            FileType::Csv => "csv",
+            FileType::Json => "json",
+            FileType::Parquet => "parquet",
+            FileType::Yaml => "application/x-yaml",
+            FileType::Txt => "text/plain",
+            FileType::Unknown(_) => "application/octet-stream",
+        }
+    }
+
+   
+
+
 
 #[derive(Debug)]
 enum LogLevel {

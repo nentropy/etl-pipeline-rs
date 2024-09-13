@@ -1,0 +1,29 @@
+# Grafana with Promethus Logging
+FROM grafana/grafana:latest AS grafana
+
+FROM prom/prometheus:latest AS prometheus
+
+
+RUN wget https://github.com/prometheus/prometheus/releases/download/v2.30.3/prometheus-2.30.3.linux-amd64.tar.gz \
+&& tar xvfz prometheus-*.tar.gz \
+&& mv prometheus-*/prometheus /bin/ \
+&& mv prometheus-*/promtool /bin/ \
+&& mkdir /etc/prometheus \
+&& mv prometheus-*/prometheus.yml /etc/prometheus/ \
+&& mkdir /prometheus \
+&& rm -rf prometheus-*
+
+FROM debian:bullseye-slim
+
+RUN apt-get update && apt-get install grafana -y && rm -rf /var/lib/apt/lists/*
+
+EXPOSE 3000 9090 3100 3200
+# Wait for all processes to start\n\
+RUN chmod +x ./start_services.sh
+
+# Set the default command to run the script
+COPY start_services.sh /usr/local/bin/start_services.sh
+RUN chmod +x /usr/local/bin/start_services.sh
+
+EXPOSE 3000 9090 
+CMD ["/usr/local/bin/start_services.sh"]

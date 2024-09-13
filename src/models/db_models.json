@@ -1,0 +1,96 @@
+{
+    "tables": [
+      {
+        "name": "sessions",
+        "columns": [
+          { "name": "session_id", "type": "SERIAL", "primary_key": true },
+          { "name": "user_id", "type": "INT", "not_null": true },
+          { "name": "created", "type": "TIMESTAMPTZ", "default": "CURRENT_TIMESTAMP" },
+          { "name": "duration", "type": "INTERVAL" }
+        ],
+        "foreign_keys": [
+          {
+            "column": "user_id",
+            "references": {
+              "table": "users",
+              "column": "user_id"
+            },
+            "on_delete": "CASCADE"
+          }
+        ]
+      },
+      {
+        "name": "users",
+        "columns": [
+          { "name": "user_id", "type": "SERIAL", "primary_key": true },
+          { "name": "username", "type": "VARCHAR(50)", "unique": true, "not_null": true },
+          { "name": "email", "type": "VARCHAR(100)", "unique": true, "not_null": true },
+          { "name": "created", "type": "TIMESTAMPTZ", "default": "CURRENT_TIMESTAMP" }
+        ]
+      },
+      {
+        "name": "logs",
+        "columns": [
+          { "name": "log_id", "type": "SERIAL", "primary_key": true },
+          { "name": "session_id", "type": "INT", "not_null": true },
+          { "name": "log_time", "type": "TIMESTAMPTZ", "default": "CURRENT_TIMESTAMP" },
+          { "name": "log_message", "type": "TEXT" }
+        ],
+        "foreign_keys": [
+          {
+            "column": "session_id",
+            "references": {
+              "table": "sessions",
+              "column": "session_id"
+            },
+            "on_delete": "CASCADE"
+          }
+        ]
+      },
+      {
+        "name": "data_entries",
+        "columns": [
+          { "name": "entry_id", "type": "SERIAL", "primary_key": true },
+          { "name": "session_id", "type": "INT", "not_null": true },
+          { "name": "data_key", "type": "VARCHAR(100)", "not_null": true },
+          { "name": "data_value", "type": "TEXT" }
+        ],
+        "foreign_keys": [
+          {
+            "column": "session_id",
+            "references": {
+              "table": "sessions",
+              "column": "session_id"
+            },
+            "on_delete": "CASCADE"
+          }
+        ]
+      },
+      {
+        "name": "errors",
+        "columns": [
+          { "name": "error_id", "type": "SERIAL", "primary_key": true },
+          { "name": "session_id", "type": "INT", "not_null": true },
+          { "name": "error_time", "type": "TIMESTAMPTZ", "default": "CURRENT_TIMESTAMP" },
+          { "name": "error_message", "type": "TEXT" }
+        ],
+        "foreign_keys": [
+          {
+            "column": "session_id",
+            "references": {
+              "table": "sessions",
+              "column": "session_id"
+            },
+            "on_delete": "CASCADE"
+          }
+        ]
+      }
+    ],
+    "indexes": [
+      { "table": "sessions", "columns": ["user_id"] },
+      { "table": "logs", "columns": ["session_id"] },
+      { "table": "data_entries", "columns": ["session_id"] },
+      { "table": "errors", "columns": ["session_id"] }
+    ]
+  }
+  

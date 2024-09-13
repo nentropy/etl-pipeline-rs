@@ -9,9 +9,11 @@ use serde::{Deserialize, Serialize};
 use chrono::Utc;
 use syn_crabs::setup_logging;
 use uuid::Uuid;
+mod data_ingestion;
+mod data_transformation;
 
-
-
+pub use data_ingestion::DataIngestionService;
+pub use data_transformation::DataTransformationService;
 
 /// Asynchronous function that defines routes for ingesting, processing, and querying data.
 /// Handles POST requests to ingest and process data, and GET request to query data by ID.

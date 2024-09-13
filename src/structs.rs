@@ -3,6 +3,8 @@
 /// 
 
 use std::fs::File
+use uuid::uuid;
+
 static TMP_FILEPATH: FilePath = "/Users/nullzero/Documents/repos/opencti/cloudflare/workers-rs/cloudflare-etl-pipeline/src/tmp";
 
 #[derive(Serialize)]
@@ -17,44 +19,11 @@ pub struct ETLPipelineBase {
         metadata: Metadata,
     }
 
-
-
-#[derive(Deserialize, Serialize, Clone, Debug)]
-struct Session {
-    uuid: uuid,
-    timestamp: DateTime<Utc>,
-    user_id: String,
-    user_name: String,
-    start_session: DateTime<Utc>,
-    end_session: Option<DateTime<Utc>>,
-    error: Vec<String>
-}
-
-impl Session {
-    let new_session = Session
-         // implemented in a textfile for now
-        
-        // Implement password verification logic here
-        // For now, we'll just create a new session
-        Ok(Session {
-            uuid: Uuid::new_v4(),
-            timestamp: Utc::now(),
-            user_id: user.id.to_string(),
-            user_name: user.username.clone(),
-            start_session: Utc::now(),
-            end_session: None,
-            error: Vec::new(),
-        })
-    }
-
-    fn end_session_with_timestamp(&mut self) {
-        self.end_session = Some(Utc::now());
-        let formatted_time = self.end_session.unwrap().format("%Y-%m-%d %H:%M:%S").to_string();
-        log::info!("Session ended at: {}", formatted_time);
-    }
-
+#[derive(Debug, Clone, Hash, Eq, PartialEq)]
+pub struct SessionID(Uuid);
 
 pub struct SessionContext {
+    sessions: HashMap<SessionID, Session>,
     session_id: Session,
     timestamp: DateTime<Utc>,
     created_at: DateTime<Utc>
@@ -63,17 +32,33 @@ pub struct SessionContext {
 
 impl SessionContext {
     pub fn new() -> Self {
-        Self {
+       SessionContext {
+            sessions: HashMap::new(),
             session_id: Uuid::new_v4(),
             timestamp: Utc::now(),
             created_at: Utc::now(),
         }
     }
 
-    pub fn get_session_id(&self) -> Uuid {
-        self.session_id
+    pub fn create_session(&mut self) -> SessionID {
+        let id = sessionID(Uuid::new_v4());
+        self.sesions.insert(id.clone(), Session {
+            uuid
+             }
+    }
+
+    pub fn get_session_id(&self, id: &SessionID) -> Uuid {
+        self.sessions.get(id)
     }
 }
+
+
+
+
+    
+
+
+
 
 struct User {
     id: Uuid,
